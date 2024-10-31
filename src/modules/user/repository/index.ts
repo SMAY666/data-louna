@@ -1,4 +1,4 @@
-import {UserInstance} from '../model/types';
+import {UserInstance, UserUpdateAttributes} from '../model/types';
 import {UserModel} from '../model';
 import {GetOptions} from './types';
 
@@ -25,9 +25,14 @@ class UserRepository {
         return user;
     }
 
-    public async changePassword(id: number, oldPassword: string, newPassword: string): Promise<UserInstance> {
+    public async update(id: number, data: UserUpdateAttributes): Promise<UserInstance> {
         const user = await this.getById(id);
 
+        return user.update(data);
+    }
+
+    public async changePassword(id: number, oldPassword: string, newPassword: string): Promise<UserInstance> {
+        const user = await this.getById(id);
         if (oldPassword !== user._dataValues.passwordHash) {
             throw new Error('Incorrect password');
         }
