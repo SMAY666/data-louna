@@ -4,6 +4,6 @@ export type LoginRequest = {
         password: string
     },
     Reply: {
-        accessToken: string
+        logged: boolean
     }
 }
