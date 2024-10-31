@@ -13,19 +13,23 @@
   "license": "UNLICENSED",
   "description": "",
   "devDependencies": {
+    "@types/axios": "^0.14.4",
     "@types/bcrypt": "^5.0.2",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^22.8.4",
+    "@types/redis": "^4.0.11",
     "typescript": "^5.6.3"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.1",
     "@fastify/session": "^11.0.1",
+    "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
     "fastify": "^5.0.0",
-    "postgres": "^3.4.5"
+    "postgres": "^3.4.5",
+    "redis": "^4.7.0"
   }
 }

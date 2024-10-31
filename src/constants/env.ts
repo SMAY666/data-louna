@@ -13,4 +13,7 @@ export const ENV = cleanEnv(
 
         SALT: str(),
         SESSION_SECRET: str(),
+
+        REDIS_HOST: str(),
+        REDIS_PORT: num(),
     });
