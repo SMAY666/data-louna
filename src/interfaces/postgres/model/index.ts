@@ -89,17 +89,59 @@ export class Model<T extends Entity<any, any>> {
             queryString += 'values (' + values.join(', ') + ')\n';
             queryString += `returning ${this.returningFields()};`;
 
-            const queryResult = pgConnection.query(queryString);
+            const queryResult = await pgConnection.query(queryString);
             if (!queryResult) {
                 throw new Error('Что-то пошло не так');
             }
-            // @ts-ignore
-            const result = this.parseResponse(this.fields, queryResult);
+            const result = this.parseResponse(queryResult);
 
             if (Array.isArray(result)) {
                 return result[0];
             }
             return result;
+        } catch (err) {
+            throw new Error(JSON.stringify(err));
+        }
+    }
+
+    public async bulkCreate(data: T['creationAttributes'][]): Promise<T[]> {
+        try {
+            let queryString = `insert into public.${this.name} (`;
+            const formatKeys = Object.keys(data[0]).map((key) => sqlKeywords.includes(key) ? `"${key}"` : key);
+            const commonValues: any[][] = [];
+
+            data.forEach((item) => {
+                const values: any[] = [];
+                for (const key in item) {
+                    if (typeof item[key] === 'string') {
+                        if (item[key].includes("'")) {
+                            item[key].replace("'", "''");
+                        }
+                        values.push(`'${item[key]}'`);
+                    } else if (item[key] === undefined || item[key] === null) {
+                      values.push('null')
+                    } else {
+                      values.push(item[key]);
+                    }
+                }
+
+                commonValues.push(values);
+            })
+            queryString += formatKeys.join(', ') + ') values \n';
+            commonValues.forEach((values, index) => {
+               queryString += `(${values.join(', ')})`;
+               if (index !== commonValues.length - 1) {
+                   queryString += ',\n';
+               }
+            });
+
+            queryString += ' returning' + ' ' + this.returningFields();
+
+            const queryResult = await pgConnection.query(queryString);
+            if (!queryResult) {
+                throw new Error('Что-то пошло не так');
+            }
+            return this.parseResponse(queryResult);
         } catch (err) {
             throw new Error(JSON.stringify(err));
         }
