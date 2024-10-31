@@ -13,10 +13,12 @@
   "license": "UNLICENSED",
   "description": "",
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^22.8.4",
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
     "fastify": "^5.0.0",
