@@ -13,9 +13,12 @@
   "license": "UNLICENSED",
   "description": "",
   "devDependencies": {
+    "@types/node": "^22.8.4",
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
+    "envalid": "^8.0.0",
     "postgres": "^3.4.5"
   }
 }
