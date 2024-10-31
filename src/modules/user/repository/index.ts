@@ -24,6 +24,16 @@ class UserRepository {
 
         return user;
     }
+
+    public async changePassword(id: number, oldPassword: string, newPassword: string): Promise<UserInstance> {
+        const user = await this.getById(id);
+
+        if (oldPassword !== user._dataValues.passwordHash) {
+            throw new Error('Incorrect password');
+        }
+
+        return user.update({passwordHash: newPassword});
+    }
 }
 
 export const userRepository = new UserRepository();

@@ -1,1 +1,1 @@
-export const sqlKeywords = ['name'];
+export const sqlKeywords = ['name', 'passwordHash'];

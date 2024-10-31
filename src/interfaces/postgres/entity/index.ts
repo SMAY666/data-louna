@@ -56,7 +56,7 @@ export class Entity<CreationAttributes extends object, Attributes extends object
             });
 
             // @ts-ignore
-            let queryString = `update ${this.tableName} set ${updatingFields.join(', ')} where id=${this._dataValues.id}`;
+            let queryString = `update public.${this.tableName} set ${updatingFields.join(', ')} where id=${this._dataValues.id}`;
             const queryResult = await pgConnection.query(queryString);
 
             if (queryResult) {
