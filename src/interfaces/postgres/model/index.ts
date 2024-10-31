@@ -47,7 +47,7 @@ export class Model<T extends Entity<any, any>> {
         return instance as T;
     }
 
-    private parseResponse(fields: T['_dataValues'], response: any[]): T[] {
+    private parseResponse(response: any[]): T[] {
         const result: T[] = [];
         if (!response || !response.length) {
             throw new Error('Response parsing failed');
@@ -122,7 +122,7 @@ export class Model<T extends Entity<any, any>> {
         if (!queryResponse.length) {
             return null;
         }
-        return this.parseResponse(this.fields, queryResponse)[0];
+        return this.parseResponse(queryResponse)[0];
     }
 
     public async findAll(options?: GetAllOptions<Partial<T['_dataValues']>>): Promise<T[]> {
@@ -133,7 +133,7 @@ export class Model<T extends Entity<any, any>> {
                 if (!queryResult.length) {
                     throw new Error('Что-то пошло не так');
                 }
-                return this.parseResponse(this.fields, queryResult);
+                return this.parseResponse(queryResult);
             }
             const where = options.where;
 
@@ -163,7 +163,7 @@ export class Model<T extends Entity<any, any>> {
                 throw new Error('Что-то пошло не так');
             }
 
-            return this.parseResponse(this.fields, queryResult);
+            return this.parseResponse(queryResult);
         } catch (err) {
             throw new Error(JSON.stringify(err));
         }
