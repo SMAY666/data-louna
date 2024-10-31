@@ -16,7 +16,7 @@ class JWT {
 
     public sign(payload: Record<any, any>, options: JWTOptions) {
         this.header = {alg: 'HS256', typ: 'JWT'};
-        this.payload = {...payload, expiresIn: options.expiresIn};
+        this.payload = {...payload, expiresIn: Date.now() + options.liveTime};
         this.secret = options.secret;
 
         this.H = this.base64UrlEncode(JSON.stringify(this.header));

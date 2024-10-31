@@ -1,12 +1,14 @@
 import fastify from 'fastify';
 import {ENV} from './constants/env';
+import {authorizationRoute} from './routes/v1/authorization';
 
 
 export const server = fastify({
-    logger: true,
+    logger: false,
     ajv: {},
 });
 
+void server.register(authorizationRoute, {prefix: '/auth'});
 
 export async function startServer() {
     return new Promise((resolve, reject) => {

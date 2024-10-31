@@ -53,11 +53,7 @@ export class Model<T extends Entity<any, any>> {
             throw new Error('Response parsing failed');
         }
         for (const row of response) {
-            const attributes: T['_dataValues'] = {};
-
-            Object.keys(fields).forEach((key, index) => {
-                attributes[key] = row[index];
-            });
+            const attributes: T['_dataValues'] = row;
             const instance = this.createInstance(attributes);
             result.push(instance);
         }
@@ -73,7 +69,7 @@ export class Model<T extends Entity<any, any>> {
             const definedFields: string[] = [];
             Object.keys(this.fields).forEach((key) => {
                 const field = this.fields[key];
-                const fieldDefine = `${key} ${field.autoincrement ? 'serial' : field.type}${field.primaryKey ? ' PRIMARY KEY' : ''}${field.allowNull ? '' : ' NOT NULL'}`;
+                const fieldDefine = `${sqlKeywords.includes(key) ? `"${key}"` : key} ${field.autoincrement ? 'serial' : field.type}${field.primaryKey ? ' PRIMARY KEY' : ''}${field.allowNull ? '' : ' NOT NULL'}`;
                 definedFields.push(fieldDefine);
             });
 
@@ -160,9 +156,10 @@ export class Model<T extends Entity<any, any>> {
                 queryString += ` where ${whereElements.join(' or ')}`;
             }
 
-            const queryResult = await pgConnection.query(`${queryString}`);
 
-            if (!queryResult.length) {
+            const queryResult = await pgConnection.query(queryString);
+
+            if (queryResult.length === 0) {
                 throw new Error('Что-то пошло не так');
             }
 
