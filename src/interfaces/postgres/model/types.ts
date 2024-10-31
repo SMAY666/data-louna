@@ -5,6 +5,7 @@ export enum PostgresTypes  {
     STRING = 'varchar(255)',
     BOOL = 'bool',
     TIMESTAMP = 'timestamp',
+    REAL = 'real',
 }
 
 export type FieldsConfig<T> = {
