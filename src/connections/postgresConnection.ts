@@ -34,7 +34,11 @@ class PostgresConnection {
     }
 
     public async query(sql: string) {
-        return await this.connection.unsafe(sql);
+        try {
+            return await this.connection.unsafe(sql);
+        } catch (err) {
+            throw new Error(JSON.stringify(err));
+        }
     }
 
     public define<T extends Entity<any, any>>(fields: FieldsConfig<T['_dataValues']>, name: string): Model<T> {

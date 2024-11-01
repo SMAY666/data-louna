@@ -1,6 +1,6 @@
 import {pgConnection} from '../../../connections/postgresConnection';
 import {sqlKeywords} from '../../../constants/sqlKeywords';
-import {FieldsConfig, GetAllOptions, WhereOption} from './types';
+import {FieldsConfig, GetAllOptions, RelationOptions, WhereOption} from './types';
 import {Entity} from '../entity';
 
 export class Model<T extends Entity<any, any>> {
@@ -69,9 +69,11 @@ export class Model<T extends Entity<any, any>> {
             const definedFields: string[] = [];
             Object.keys(this.fields).forEach((key) => {
                 const field = this.fields[key];
-                const fieldDefine = `${sqlKeywords.includes(key) ? `"${key}"` : key} ${field.autoincrement ? 'serial' : field.type}${field.primaryKey ? ' PRIMARY KEY' : ''}${field.allowNull ? '' : ' NOT NULL'}`;
+                const fieldDefine = `"${key}" ${field.autoincrement ? 'serial' : field.type}${field.primaryKey ? ' PRIMARY KEY' : ''}${field.allowNull ? '' : ' NOT NULL'}`;
                 definedFields.push(fieldDefine);
             });
+
+            console.log(`create table if not exists ${this.name} (${definedFields.join(', ')})`);
 
             await pgConnection.query(`create table if not exists ${this.name} (${definedFields.join(', ')})`);
         } catch (err) {
@@ -82,7 +84,7 @@ export class Model<T extends Entity<any, any>> {
     public async create(data: T['creationAttributes']): Promise<T> {
         try {
             let queryString = `insert into public.${this.name} (`;
-            const formatKeys = Object.keys(data).map((key) => sqlKeywords.includes(key) ? `"${key}"` : key);
+            const formatKeys = Object.keys(data).map((key) => `"${key}"`);
             queryString += formatKeys.join(', ') + ')\n';
 
             const values = Object.keys(data).map((key) => `'${data[key]}'`);
@@ -209,5 +211,14 @@ export class Model<T extends Entity<any, any>> {
         } catch (err) {
             throw new Error(JSON.stringify(err));
         }
+    }
+
+    public async hasMany(model: Model<Entity<any, any>>, options: RelationOptions) {
+        const queryString = `alter table ${model.name} 
+                             add constraint ${options.as}
+                             foreign key (${options.foreignKey})
+                             references ${this.name}(id)
+                             on delete ${options.onDelete ?? 'cascade'}`;
+        return await pgConnection.query(queryString);
     }
 }

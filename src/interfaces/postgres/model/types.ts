@@ -28,6 +28,12 @@ export type WhereOption<T> = {
 }
 
 export type GetAllOptions<T> = {
-    where?: WhereOption<T> | WhereOption<T>[],
-    attributes?: string[];
+    where?: WhereOption<T> | WhereOption<T>[]
+    attributes?: string[]
+}
+
+export type RelationOptions = {
+    foreignKey: string
+    as: string
+    onDelete?: 'cascade'
 }
