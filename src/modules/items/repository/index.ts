@@ -60,7 +60,6 @@ class ItemsRepository {
         await pgConnection.startTransaction([
             `update public.users set balance=${userBalance - item._dataValues[price]} where id=${userId};`,
             `insert into public.purchases ("userId", "itemId", price, date) values (${userId}, ${id}, ${item._dataValues[price]}, '${new Date().getDate() + '.' + new Date().getMonth() + '.' + new Date().getFullYear()}');`,
-            `delete from public.items where id=${id};`
         ]);
 
         const newBalance = await usersRepository.getBalance(userId);
