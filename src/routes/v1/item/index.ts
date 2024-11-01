@@ -9,7 +9,10 @@ export const itemsRoutes: FastifyPluginCallback = (instance, opts, done) => {
     );
     instance.post(
         '/buy',
-        {},
+        {
+            // @ts-ignore
+            onRequest: instance.verifySession
+        },
         controller.buy,
     );
 

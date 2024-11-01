@@ -3,6 +3,7 @@ import {ENV} from './constants/env';
 import fastifyCookie from '@fastify/cookie';
 import fastifySession from '@fastify/session';
 import {apiRoutes} from './routes';
+import {verifySession} from './middlewares/verifySession';
 
 
 export const server = fastify({
@@ -15,11 +16,12 @@ void server.register(fastifySession, {
     secret: ENV.SESSION_SECRET,
     cookie: {
         secure: false,
-        maxAge: 3.6e+6 // 1 hour
+        maxAge: ENV.SESSION_LIVE_TIME
     }
 });
 
 void server.register(apiRoutes, {prefix: '/api'});
+server.decorate('verifySession', verifySession);
 
 export async function startServer() {
     return new Promise((resolve, reject) => {
