@@ -7,6 +7,11 @@ export const itemsRoutes: FastifyPluginCallback = (instance, opts, done) => {
         {},
         controller.getAll,
     );
+    instance.post(
+        '/buy',
+        {},
+        controller.buy,
+    );
 
-    done()
+    done();
 };

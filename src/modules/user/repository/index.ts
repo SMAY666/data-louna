@@ -2,7 +2,7 @@ import {UserInstance, UserUpdateAttributes} from '../model/types';
 import {UserModel} from '../model';
 import {GetOptions} from './types';
 
-class UserRepository {
+class UsersRepository {
     // ----- [ PUBLIC METHODS ] ----------------------------------------------------------------------------------------
 
     public async getById(id: number): Promise<UserInstance> {
@@ -39,6 +39,12 @@ class UserRepository {
 
         return user.update({passwordHash: newPassword});
     }
+
+    public async getBalance(id: number): Promise<number> {
+        const user = await this.getById(id);
+
+        return user._dataValues.balance;
+    }
 }
 
-export const userRepository = new UserRepository();
+export const usersRepository = new UsersRepository();

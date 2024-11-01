@@ -1,6 +1,10 @@
 import axios from "axios";
 import {redisConnection} from '../../../connections/redisConnection';
 import {ItemModel} from '../model';
+import {ItemInstance} from '../model/types';
+import {usersRepository} from '../../user/repository';
+import {PurchaseModel} from '../../purchases/model';
+import {pgConnection} from '../../../connections/postgresConnection';
 
 
 class ItemsRepository {
@@ -18,6 +22,15 @@ class ItemsRepository {
        return await ItemModel.bulkCreate(neededData.splice(0, 20));
     }
 
+    public async getById(id: number): Promise<ItemInstance> {
+        const item = await ItemModel.findById(id);
+        if (!item) {
+            throw new Error(`Item not found`);
+        }
+
+        return item;
+    }
+
     public async getAll() {
         const dataFromRedis = await redisConnection.get('items');
         if (!dataFromRedis) {
@@ -25,6 +38,34 @@ class ItemsRepository {
         }
 
         return await ItemModel.findAll();
+    }
+
+    public async buy(price: 'tradable' | 'min_price', id: number, userId: number): Promise<{balance: number}> {
+        const item = await this.getById(id);
+        const user = await usersRepository.getById(userId);
+
+        const userBalance = user._dataValues.balance;
+
+        if (!item._dataValues[price]) {
+            throw new Error('Something went wrong');
+        }
+
+        if (userBalance < item._dataValues[price]) {
+            throw new Error('Not enough balance');
+        }
+
+        // await user.update({balance: userBalance - item._dataValues[price]});
+
+
+        await pgConnection.startTransaction([
+            `update public.users set balance=${userBalance - item._dataValues[price]} where id=${userId};`,
+            `insert into public.purchases ("userId", "itemId", price, date) values (${userId}, ${id}, ${item._dataValues[price]}, '${new Date().getDate() + '.' + new Date().getMonth() + '.' + new Date().getFullYear()}');`,
+            `delete from public.items where id=${id};`
+        ]);
+
+        const newBalance = await usersRepository.getBalance(userId);
+
+        return {balance: newBalance}
     }
 }
 
