@@ -73,8 +73,6 @@ export class Model<T extends Entity<any, any>> {
                 definedFields.push(fieldDefine);
             });
 
-            console.log(`create table if not exists ${this.name} (${definedFields.join(', ')})`);
-
             await pgConnection.query(`create table if not exists ${this.name} (${definedFields.join(', ')})`);
         } catch (err) {
             throw new Error(JSON.stringify(err));

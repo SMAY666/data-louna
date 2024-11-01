@@ -41,6 +41,14 @@ class PostgresConnection {
         }
     }
 
+    public async startTransaction(queries: string[]) {
+        return await this.connection.begin(async (sql) => {
+            for (const query of queries) {
+                await this.query(query);
+            }
+        });
+    }
+
     public define<T extends Entity<any, any>>(fields: FieldsConfig<T['_dataValues']>, name: string): Model<T> {
         const newModel = new Model<T>(fields, name);
         this.models.push(newModel);
